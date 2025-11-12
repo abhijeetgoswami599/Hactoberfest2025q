@@ -1,0 +1,61 @@
+class Solution:
+    def kMirror(self, k: int, n: int) -> int:
+        ans = 0
+        found_count = 0
+
+        # Helper function to check if a number is a palindrome in a given base
+        def is_palindrome_in_base(num, base):
+            if num == 0:
+                return True
+            
+            digits = []
+            while num > 0:
+                digits.append(str(num % base))
+                num //= base
+            
+            return digits == digits[::-1]
+
+        # Generate base-10 palindromes and check if they are k-mirror numbers
+        length = 1
+        while found_count < n:
+            # Generate odd-length palindromes
+            start_num = 10 ** ((length - 1) // 2)
+            end_num = 10 ** ((length + 1) // 2)
+
+            for i in range(start_num, end_num):
+                s_i = str(i)
+                # Odd length: i + middle_digit + reversed(i[:-1])
+                for mid_digit in range(10):
+                    if length == 1 and mid_digit == 0: # Handle single digit 0
+                        continue
+                    
+                    if length == 1:
+                        num_str = str(mid_digit)
+                    else:
+                        num_str = s_i + str(mid_digit) + s_i[:-1][::-1]
+                    
+                    num = int(num_str)
+                    if str(num) == str(num)[::-1] and is_palindrome_in_base(num, k):
+                        ans += num
+                        found_count += 1
+                        if found_count == n:
+                            return ans
+            
+            # Generate even-length palindromes
+            start_num = 10 ** (length // 2 - 1) if length // 2 > 0 else 1
+            end_num = 10 ** (length // 2)
+
+            for i in range(start_num, end_num):
+                s_i = str(i)
+                num_str = s_i + s_i[::-1]
+                num = int(num_str)
+                
+                if str(num) == str(num)[::-1] and is_palindrome_in_base(num, k):
+                    ans += num
+                    found_count += 1
+                    if found_count == n:
+                        return ans
+            
+            length += 1
+        
+        return ans
